@@ -1,4 +1,5 @@
-﻿#include <iostream>
+﻿#pragma region Kütüphaneler
+#include <iostream>
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
@@ -15,16 +16,26 @@
 #include <ctime>
 #include <time.h>
 using namespace std;
+#pragma endregion
 
+//levenshtein için
 #define MIN(x,y) ((x) < (y) ? (x) : (y))
+//Karp Rabin içinde gelen Verinin RTF-XML-HTML-TXT den geldiğini anlamıza yarayan değişken
 string _gelen;
+//Genel Değişkenlerimiz
 int i, j  , l1, l2, t, track;
+//Verileri dosyalardan çektikten sonra aktardığımız char dizileri
 char txt[100000000];
 char html[100000000];
 char rtf[100000000];
 char xml[100000000];
+//Char dizlerinin bitişi
+
+//dosya dosya içinde pat kelimesinden kaç tane olduğunu saydığımız sayaç
 int sayac = 0;
+//Dosyaların içinde toplamda kaç tane pat kelimesinden geçtiğini saydığımız sayaç 
 int sayact = 0; 
+//MAX değerinin aldığı değer
 #define MAX 100
 static int mesafe;
 
@@ -70,12 +81,12 @@ int levenshtein(char GK[], char KK[], int m, int n)
 #pragma endregion
 
 #pragma region karprabin Algoritma
-// d is the number of characters in the input alphabet  
+// d Alfabedeki karakter sayısıdır. 
 #define d 256  
 
-/* pat -> pattern
-    txt -> text
-    q -> A prime number
+/* pat -> Aranan Kelime
+    txt -> Gelen Char dizisi
+    q -> Birincil Numara
 */
 void search(char pat[], char txt[], int q , int sayi)
 {
@@ -88,12 +99,10 @@ void search(char pat[], char txt[], int q , int sayi)
     int h = 1;
 
     ofstream dosya("aranan_" + string(pat) + ".txt", ios::out | ios::app);
-    // The value of h would be "pow(d, M-1)%q"  
     for (i = 0; i < M - 1; i++)
         h = (h * d) % q;
 
-    // Calculate the hash value of pattern and first  
-    // window of text  
+
     for (i = 0; i < M; i++)
     {
         p = (d * p + pat[i]) % q;
@@ -101,22 +110,17 @@ void search(char pat[], char txt[], int q , int sayi)
     }
 
     cout<<endl<<"--------------------------------> " <<"Aranan Kelime : "<< pat << " <-------------------------------" << endl;
-    // Slide the pattern over text one by one  
     for (i = 0; i <= N - M; i++)
     {
         
-        // Check the hash values of current window of text  
-        // and pattern. If the hash values match then only  
-        // check for characters on by one  
+
         if (p == t)
         {
-            /* Check for characters one by one */
             for (j = 0; j < M; j++)
             {
                 if (txt[i + j] != pat[j])
                     break;
             }
-            // if p == t and pat[0...M-1] = txt[i, i+1, ...i+M-1]  
             if (j == M) {
             if (sayi == 1)
                 _gelen = "RTF";
@@ -130,20 +134,18 @@ void search(char pat[], char txt[], int q , int sayi)
             cout << "Bulundugu index " << i << sayact++ << sayac++ << endl;
          }
         }
-        // Calculate hash value for next window of text: Remove  
-        // leading digit, add trailing digit  
+ 
         if (i < N - M)
         {
             t = (d * (t - txt[i] * h) + txt[i + M]) % q;
 
-            // We might get negative value of t, converting it  
-            // to positive  
+
             if (t < 0)
                 t = (t + q);
 
         }
         if (i == N-M && j != M) {
-            cout <<endl<< "Sonuc Bulunamadi :("<<endl<<endl;
+         
 
         }
 
@@ -152,6 +154,7 @@ void search(char pat[], char txt[], int q , int sayi)
 #pragma endregion
 
 #pragma region txt
+//txt verilerini çekip diziye aktardığımız fonksiyon
 void veriCekTxt() {
 
    
@@ -160,8 +163,6 @@ void veriCekTxt() {
 
     if (oku.is_open())
     {
-
-
             for (int i = 0; i < 1000000; ++i)
             {
                 oku >> txt[i];
@@ -173,21 +174,7 @@ void veriCekTxt() {
 #pragma endregion
 
 #pragma region Html 
-bool InTag(char c)
-{
-    static int bracket = 0;
-    switch (c)
-    {
-    case '<':
-        ++bracket;
-        break;
-    case '>':
-        --bracket;
-        return true;
-    }
-    return bracket > 0;
-}
-
+//html verilerini çekip diziye aktardığımız fonksiyon
 void htmlcek() {
 
 
@@ -205,23 +192,24 @@ void htmlcek() {
 #pragma endregion
 
 #pragma region RTF
-
+//rtf verilerini çekip diziye aktardığımız fonksiyon
 void rtfcek() {
 
-    string line; //this will contain the data read from the file
-    ifstream myfile("veri.rtf"); //opening the file.
-    if (myfile.is_open()) //if the file is open
+  
+    ifstream myfile("veri.rtf"); 
+    if (myfile.is_open()) 
     {
         for (int i = 0; i < 1000000; ++i)
             myfile >> rtf[i];
 
-        myfile.close(); //closing the file
+        myfile.close(); 
     }
     else cout << "Unable to open file";
 }
 #pragma endregion
 
 #pragma region xml
+//xml verilerini çekip diziye aktardığımız fonksiyon
 void xmlCek() {
 
 
@@ -248,7 +236,7 @@ int main()
 {
  
 
-    
+    //Değişken Tanımlama
     int j = 101; // A prime number  
     int z = 10;
     char pat[256] ;
@@ -256,15 +244,18 @@ int main()
     setlocale(LC_ALL, "Turkish");
     srand(time(0));
     clock_t t1, t2,t3, t4, t5, t6, t7, t8, t9, t10;
+    //Değişken tanımlama bitiş
+    //Bütün programın çalışma saatinin başlangıcı
     t9 = clock();
 
     cout << "Aranacak Kelimeyi Giriniz : ";
     cin.getline(pat,256);
     static char GirilenKelime[MAX];
     char KayitliKelime[MAX];
+    //bunu mu demek istediniz ? kısmı için kelimeler
     string kelimler[13] = { "veri", "Data", "DataBase", "oracle", "system", "Program" , "Objects" , "Data Access" , "Data Access" , "Insert" , "update" , "delete" , "table" };
 
-
+    //Kelimleri büyük küçük halini kontrol ediyor
     for (int i = 0; i < MAX; i++)
     {
         pat[i] = tolower(pat[i]);
@@ -283,7 +274,9 @@ int main()
 
     t1 = clock();
     cout << " ========== XML den Cekme Islemi Basliyor ========== " << endl;
+    //xmlcek fonksiyonu çağrılıyor 
     xmlCek();
+    //Gelen veriler ile birlikte search fonksiyonuna parametreleri gönderiyoruz
     search(pat, xml, j,1);
     cout<<"--> XML de " << sayac<<" Sonuc Bulundu  <--"<<endl;
     t2 = clock();
@@ -295,7 +288,9 @@ int main()
     t3 = clock();
     sayac = 0;
     cout << " ========== RTF den Cekme Islemi Basliyor ========== " << endl;
+    //rtfcek fonksiyonu çağrılıyor 
     rtfcek();
+    //Gelen veriler ile birlikte search fonksiyonuna parametreleri gönderiyoruz
     search(pat, rtf, j,2);
     cout << "--> RTF de " << sayac << " Sonuc Bulundu  <--" << endl;
     t4 = clock();
@@ -307,7 +302,9 @@ int main()
     t5 = clock();
     sayac = 0;
     cout << " ========== Html den Cekme Islemi Basliyor ========== " << endl;
+    //htmlcek fonksiyonu çağrılıyor 
     htmlcek();
+    //Gelen veriler ile birlikte search fonksiyonuna parametreleri gönderiyoruz
     search(pat, html, j,3);
     cout << "--> Html de " << sayac << " Sonuc Bulundu  <--" << endl;
     t6 = clock();
@@ -319,7 +316,9 @@ int main()
     t7 = clock();
     sayac = 0;
     cout << " ========== TXT den Cekme Islemi Basliyor ========== " << endl;
+    //veriCekTxt fonksiyonu çağrılıyor 
     veriCekTxt();
+    //Gelen veriler ile birlikte search fonksiyonuna parametreleri gönderiyoruz
     search(pat, txt, j,4);
     cout << "--> TXT de " << sayac << " Sonuc Bulundu  <--" << endl;
     t8 = clock();
